@@ -1,0 +1,12 @@
+import cv2
+import numpy as np
+
+img= cv2.imread(r'C:\Users\MEGHA M NAIR\watch.jpg',cv2.IMREAD_GRAYSCALE)
+#As a replacement for IMREAD_COLOR/GRAYSCALE/UNCHANGED, the following number codes can be used-Color is 1, grayscale is 0, and the unchanged is -1. 
+#Thus, for grayscale,one could do img = cv2.imread('watch.jpg', 0)
+cv2.imshow('image', img)
+#to show image
+cv2.waitKey(0)
+#to wait until any key is pressed
+cv2.destroyAllWindows()
+#to close all windows

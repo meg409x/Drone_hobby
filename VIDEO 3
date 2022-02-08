@@ -1,0 +1,22 @@
+#Drawing on images 
+import cv2
+import numpy as np
+
+img = cv2.imread(r'C:\Users\MEGHA M NAIR\watch.jpg")
+cv2.line(img,(0,0), (150,150), (255,255,255), 15)
+#           start point, end point coordinates, color code for white is 250,250,250, 15 is the desired line width in pixels
+cv2.rectangle(img, (15,250), (200,150), (0,255,0), 5)
+#            from top left to bottom right coordinate, color code for green is 0,250,0 ,5 is the desired line width in pixels
+cv2.circle(img, (100,63), 55, (0,0,255), -1)
+#            coordinates for centre of the circle, radius of circle, color code for red is 0,0,255 , -1(only applies for circle) represents: fill in circle with desired color( however, if used positively will be taken as line width)
+pts = np.array([[10,5],[20,30],[70,20],[50,10]],np.int32)
+#              mention desired coordinates for craeting polygon, np.int32 is a data type 
+cv2.polylines(img, [pts], True, (0,255,255), 3)
+# True represents points of the polygon needs to be connected, color code for yellow is 0,255,255 , 3 is the line width
+font = cv2.FONT_HERSHEY_SIMPLEX
+cv2Text(img, 'OpenCV Tuts!', (0,130), font, 1, (200,255,255), 2, cv2.LINE_AA
+#                             start point , font ,size of text, color very near to code for white, 2 is spacimg between the lines,AA represenst anti aliasing  
+# note- you can use decimal values too, for font size 
+cv2.imshow('image", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

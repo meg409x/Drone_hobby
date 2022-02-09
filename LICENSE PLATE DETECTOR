@@ -1,0 +1,60 @@
+import cv2
+import imutils
+import numpy as np
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\tesseract-ocr-setup-4.00.00dev.exe"
+
+img = cv2.imread(r"C:\Users\MEGHA M NAIR\Desktop\image7.jpg",cv2.IMREAD_COLOR)
+img = cv2.resize(img, (600,400))             
+#resizing image for our convinience of being able to see the entire picture in one window or desired space 
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+#NOTE:If you don't convert it to grayscale, then np.where(mask == 255) returns a tuple of three numpy array as mask is a 3d array,which is not desired
+gray = cv2.bilateralFilter(gray, 13, 15, 15) 
+
+edged = cv2.Canny(gray, 30, 200) 
+#RETR_LIST type is used to retrieve all the detected contours in the image
+contours = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) 
+#used imutilis instead of the 5 argument cv2.findContours and cv2.drawContours() function,
+#in order to decrease debugging issues and at the same time , save on time ! 
+contours = imutils.grab_contours(contours)
+contours = sorted(contours, key = cv2.contourArea, reverse = True)[:10]
+screenCut = None
+#for loop over our contours
+for c in contours:
+    
+    #Using peri function, we calculate perimeter of each contour
+    peri = cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, 0.018 * peri, True)
+# if our approximated contour has four points, then
+# we can assume that this is where the screen needs to be cut
+#variable screenCut has been used for ease of understanding 
+    if len(approx) == 4:
+        screenCut = approx
+        break
+
+
+#Masking every thing other than the number plate
+mask = np.zeros(gray.shape,np.uint8)
+new_image = cv2.drawContours(mask,[screenCut],0,255,-1,)
+#storing the image with new dimensions in the variable
+new_image = cv2.bitwise_and(img,img,mask=mask)
+
+(x, y) = np.where(mask == 255)
+(topx, topy) = (np.min(x), np.min(y))
+(bottomx, bottomy) = (np.max(x), np.max(y))
+#cropping the image 
+Cropped = gray[topx:bottomx+1, topy:bottomy+1]
+
+img = cv2.resize(img,(500,300))
+#resizing
+Cropped = cv2.resize(Cropped,(400,200))
+
+cv2.imshow('car',img)                    #show original imag
+cv2.imshow('mask',mask)                  #show masked number plate 
+cv2.imshow('new_image',new_image)        #show detected number plate on original image
+cv2.imshow('edged',edged)                #show edges through canny input 
+cv2.imshow('Cropped',Cropped)            #show cropped image of number plate 
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

@@ -1,0 +1,71 @@
+#MORPHOLOGICAL TRANSFORMATIONS 
+import cv2
+import numpy as np
+#show video
+cap= cv2.VideoCapture(0)
+
+while True:
+    _, frame = cap.read()
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    #hsv is hue sat value 
+    lower_red= np.array([160,100,110])
+    upper_red= np.array([255,255,255])
+
+    mask= cv2.inRange(hsv, lower_red, upper_red)
+    res= cv2.bitwise_and(frame, frame, mask = mask)
+
+    kernel= np.ones((5,5), np.uint8)
+    erosion= cv2.erode(mask, kernel, iterations = 1)
+    dilation= cv2.dilate(mask, kernel, iterations= 1)
+#The idea of "closing" is to remove false negatives. 
+#Basically this is where you have your detected shape,and yet we still have some black pixels within the object. 
+#Closing will attempt to clear that up.
+    opening= cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    closing= cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    blur= cv2.GaussianBlur(res, (15,15), 0)
+    median = cv2.medianBlur(res, 25)
+ #show 
+    cv2.imshow('frame', frame)
+    cv2.imshow('mask', mask)
+    cv2.imshow('res',res )
+    cv2.imshow('erosion', erosion)#noise in object due to erosion 
+    cv2.imshow('dilation', dilation)#noise is bg is amplified
+    cv2.imshow('opening', opening)
+    cv2.imshow('closing',closing)
+
+# exit     
+    k= cv2.waitKey(5)& 0xFF
+    if k== 27:
+        break
+cv2.destroyAllWindows()
+# close camera
+cap.release()
+--------------------------------------
+
+import cv2
+import numpy as np
+
+cap= cv2.VideoCapture(0)
+
+while True:
+    _, frame = cap.read()
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    laplacian = cv2.Laplacian(frame,cv2.CV_64F)
+#first derivative taken to bring change in color intensity to detect edges 
+    sobelx = cv2.Sobel(frame, cv2.CV_64F, 1, 0, ksize=5)
+    sobely = cv2.Sobel(frame, cv2.CV_64F, 0 , 1, ksize=5) 
+    
+#SHOW COMMANDS
+    cv2.imshow('Original',frame)
+    cv2.imshow('laplacian',laplacian)
+    cv2.imshow('sobelx',sobelx)
+    cv2.imshow('sobely',sobely)
+    
+ # EXIT    
+    k= cv2.waitKey(5)& 0xFF
+    if k== 27:
+        break
+cv2.destroyAllWindows()
+cap.release()

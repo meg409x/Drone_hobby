@@ -1,0 +1,85 @@
+#ADDING 2 IMAGES
+import cv2
+import numpy as np
+
+img1 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph1.png')
+img2 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph2.png')
+#Adding commmand
+add= img1 + img2
+
+cv2.imshow('add', add)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#ADDING IMAGE WEIGHTS 
+#Affects Opaqueness
+import cv2
+import numpy as np
+
+img1 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph1.png')
+img2 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph2.png')
+
+weighted = cv2.addWeighted(img1, 0.6, img2, 0.4, 0)
+                          #image,60%, image,40%,gamma value
+#OPAQUENESS IS AFFECTED IN OUTPUT IMAGE
+cv2.imshow('weighted', weighted)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#MASKING 
+import cv2
+import numpy as np
+
+img1 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph1.png')
+img2 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph2.png')
+#we won't use channels here
+rows,cols,channels = img2.shape
+#region of interest 
+roi= img1[0:rows,0:cols]
+#create a mask of the logo and then convert it 
+#grayscale to color 
+img2gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+#applying threshold for inverse function
+ret, mask = cv2.threshold(img2gray, 220, 255, cv2.THRESH_BINARY_INV)
+                          #if image pixel is more than 220 , it is converted to white ;
+                          #if less than 220 , it is converted to black 
+
+cv2.imshow('mask', mask)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#BITWIISE MASKING FOR LOGO AND INSERTION INTO IMAGE
+import cv2
+import numpy as np
+
+img1 = cv2.imread(r'C:\Users\MEGHA M NAIR\graph1.png')
+img2 = cv2.imread(r'C:\Users\MEGHA M NAIR\mainlogo.png')
+
+rows,cols,channels = img2.shape
+roi= img1[0:rows,0:cols]
+
+img2gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+#part where there is no mask , as in the black area 
+ret, mask = cv2.threshold(img2gray, 220, 255, cv2.THRESH_BINARY_INV)
+#part where there is no mask , as in the black area 
+
+mask_inv = cv2.bitwise_not(mask)
+#region of interest 
+#here 'and' is used like a logical operator
+#Rules for usage:both must be true for 'and', at least one should be true for 'or', only if one is true for 'xor'
+#background
+img1_bg = cv2.bitwise_and(roi, roi,mask=mask_inv)
+#foreground
+img2_fg = cv2.bitwise_and(img2, img2, mask=mask)
+#adding background and foreground
+dst = cv2.add(img1_bg, img2_fg)
+#same size
+img1[0:rows, 0:cols]= dst
+#show commands
+cv2.imshow('res',img1)
+#cv2.imshow('mask_inv',mask_inv) BOTH GIVE SAME RESULT- DOUBT
+#cv2.imshow('img1_bg',img1_bg)
+cv2.imshow('img2_fg',img2_fg)
+cv2.imshow('dst',dst)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
